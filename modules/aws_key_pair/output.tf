@@ -1,4 +1,6 @@
-output "key_name" {
-#  value = aws_key_pair.aws_key.key_name
-  value = var.key_name
+# Output directory for the private key file
+variable "output_dir" {
+  description = "Directory to store the generated .pem file."
+  type        = string
+  default     = path.cwd  # Defaults to the current working directory
 }
