@@ -1,0 +1,4 @@
+key_name    = "my-ec2-keypair"
+rsa_bits    = 4096
+output_dir  = "/secure/keys"
+environment = "production"
