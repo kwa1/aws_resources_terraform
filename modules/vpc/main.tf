@@ -114,6 +114,7 @@ resource "aws_vpc_endpoint" "dynamodb" {
 
   tags = merge(local.tags, { Name = "dynamodb-vpc-endpoint" })
 }
+# optional to create the interface endpoint or not!
 resource "aws_vpc_endpoint" "ec2" {
   count               = var.create_ec2_endpoint ? 1 : 0
   vpc_id             = aws_vpc.this.id
