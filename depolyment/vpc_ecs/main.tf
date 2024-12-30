@@ -32,3 +32,44 @@ module "ecs" {
   environment            = "production"
   tags                   = { Name = "MyECS" }
 }
+
+resource "aws_ecs_cluster" "this" {
+  name = var.ecs_cluster_name
+  tags = merge(var.tags, { Environment = var.environment })
+}
+
+resource "aws_ecs_task_definition" "this" {
+  family                = var.ecs_service_name
+  network_mode          = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                    = "256"
+  memory                 = "512"
+  container_definitions = jsonencode([{
+    name      = var.ecs_service_name
+    image     = var.container_image
+    essential = true
+    portMappings = [
+      {
+        containerPort = 80
+        hostPort      = 80
+        protocol      = "tcp"
+      }
+    ]
+  }])
+
+  tags = merge(var.tags, { Environment = var.environment })
+}
+
+resource "aws_ecs_service" "this" {
+  name            = var.ecs_service_name
+  cluster         = aws_ecs_cluster.this.id
+  task_definition = aws_ecs_task_definition.this.arn
+  desired_count   = var.desired_task_count
+  launch_type     = "FARGATE"
+  network_configuration {
+    subnets          = [var.public_subnet_id, var.private_subnet_id]
+    security_groups = [aws_security_group.ec2_sg.id]
+    assign_public_ip = true
+  }
+  tags = merge(var.tags, { Environment = var.environment })
+}
