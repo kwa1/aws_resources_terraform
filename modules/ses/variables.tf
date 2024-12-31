@@ -1,5 +1,10 @@
-variable "domain_name" {
-  description = "The domain name to configure with SES"
+variable "user" {
+  description = "Email user prefix (e.g., noreply)"
+  type        = string
+}
+
+variable "email_domain" {
+  description = "The domain for the email identity (e.g., sakano.com)"
   type        = string
 }
 
@@ -10,12 +15,6 @@ variable "region" {
 
 variable "route53_zone_id" {
   description = "The Route 53 hosted zone ID for the domain"
-  type        = string
-  default     = null
-}
-
-variable "email_identity" {
-  description = "Optional email address for SES identity (useful if pre-verified)"
   type        = string
   default     = null
 }
