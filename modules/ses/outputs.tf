@@ -1,14 +1,14 @@
-output "domain_identity_arn" {
-  description = "The ARN of the domain identity (if applicable)"
-  value       = aws_ses_domain_identity.this[0].arn
+output "email_identity" {
+  description = "The verified SES email identity"
+  value       = local.email_identity
 }
 
-output "email_identity" {
-  description = "The SES email identity (if configured)"
-  value       = var.email_identity != null ? aws_ses_email_identity.this[0].email : null
+output "verification_token" {
+  description = "The SES verification token for the email identity"
+  value       = aws_ses_email_identity.this.verification_token
 }
 
 output "dkim_tokens" {
   description = "The DKIM tokens for the domain (if applicable)"
-  value       = var.email_identity == null ? aws_ses_domain_dkim.this[0].dkim_tokens : []
+  value       = var.user == null ? aws_ses_domain_dkim.this[0].dkim_tokens : []
 }
