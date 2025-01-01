@@ -34,6 +34,7 @@ module "efs" {
       }
     }
   }
+  attach_to_instance  = true
   tags = {
     Environment = "Production"
     Application = "EFS"
