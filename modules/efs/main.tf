@@ -41,13 +41,14 @@ resource "aws_efs_file_system" "default" {
 }
 
 resource "aws_efs_mount_target" "default" {
-  count          = local.enabled && length(var.subnets) > 0 ? length(var.subnets) : 0
-  file_system_id = aws_efs_file_system.default[0].id
+  count          = local.enabled && var.attach_to_instance && length(var.subnets) > 0 ? length(var.subnets) : 0
+  file_system_id = join("", aws_efs_file_system.default.*.id)
+  ip_address     = var.mount_target_ip_address
   subnet_id      = var.subnets[count.index]
   security_groups = compact(
     concat(
       [module.security_group.id],
-      var.additional_security_group_ids
+      var.associated_security_group_ids
     )
   )
 }
