@@ -56,3 +56,8 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+variable "attach_to_instance" {
+  description = "Whether to attach EFS mount targets to EC2 instances."
+  type        = bool
+  default     = true
+}
