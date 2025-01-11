@@ -1,3 +1,5 @@
+# for s3 bucket-adjust as required.
+
 {
   "agent": {
     "metrics_collection_interval": 60,
