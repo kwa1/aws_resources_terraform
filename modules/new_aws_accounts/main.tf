@@ -1,7 +1,12 @@
+provider "aws" {
+  region = var.default_region
+}
+
+data "aws_caller_identity" "current" {}
 
 resource "aws_organizations_account" "account" {
   name                       = var.account_name
-  email                      = "aws+${lower(var.account_name)}@example.com" 
+  email                      = "aws+${lower(var.account_name)}@example.com"
   iam_user_access_to_billing = "ALLOW"
   role_name                  = "${var.account_name}OrganizationRole"
 
@@ -97,4 +102,3 @@ resource "null_resource" "configure_aws_cli" {
     EOT
   }
 }
-
