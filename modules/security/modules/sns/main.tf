@@ -1,4 +1,4 @@
-# SNS Module
+##  **`modules/sns/`** – SNS Topic Module##
 
 resource "aws_sns_topic" "metric_alarms" {
   count = var.create_sns_topic ? 1 : 0
