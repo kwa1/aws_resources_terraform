@@ -1,3 +1,4 @@
+#AWS Config Resources
 resource "aws_config_configuration_recorder" "main" {
   name     = var.config_recorder_name
   role_arn = var.config_role_arn
