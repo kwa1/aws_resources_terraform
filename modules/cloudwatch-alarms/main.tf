@@ -13,6 +13,12 @@ variable "alarm_email" {
   type        = string
 }
 
+variable "region" {
+  description = "AWS region for resources"
+  type        = string
+  default     = "us-west-2"
+}
+
 variable "metrics_alarm_config" {
   description = "Configuration for CloudWatch alarms"
   type = list(
@@ -97,8 +103,8 @@ resource "aws_cloudwatch_metric_alarm" "metric_alarms" {
   threshold           = each.value.threshold
 
   actions_enabled = true
-  alarm_actions    = [aws_sns_topic.metric_alarms.arn]
-  ok_actions       = [aws_sns_topic.metric_alarms.arn]
+  alarm_actions    = var.alarm_email != "" ? [aws_sns_topic.metric_alarms.arn] : []
+  ok_actions       = var.alarm_email != "" ? [aws_sns_topic.metric_alarms.arn] : []
 }
 
 resource "aws_sns_topic" "metric_alarms" {
@@ -106,10 +112,12 @@ resource "aws_sns_topic" "metric_alarms" {
 }
 
 resource "aws_sns_topic_subscription" "email_subscription" {
+  count     = var.alarm_email != "" ? 1 : 0
   topic_arn = aws_sns_topic.metric_alarms.arn
   protocol  = "email"
   endpoint  = var.alarm_email
 }
+
 resource "aws_cloudwatch_dashboard" "system_dashboard" {
   dashboard_name = "${var.alarm_name_prefix}-dashboard"
 
@@ -134,7 +142,7 @@ resource "aws_cloudwatch_dashboard" "system_dashboard" {
           "stat"       : "Average",
           "title"      : "System Metrics",
           "view"       : "timeSeries",
-          "region"     : "us-west-2"
+          "region"     : var.region
         }
       },
       {
