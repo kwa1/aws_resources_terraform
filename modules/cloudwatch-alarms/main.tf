@@ -110,3 +110,51 @@ resource "aws_sns_topic_subscription" "email_subscription" {
   protocol  = "email"
   endpoint  = var.alarm_email
 }
+resource "aws_cloudwatch_dashboard" "system_dashboard" {
+  dashboard_name = "${var.alarm_name_prefix}-dashboard"
+
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        "type"       : "metric",
+        "x"          : 0,
+        "y"          : 0,
+        "width"      : 6,
+        "height"     : 6,
+        "properties" : {
+          "metrics": [
+            [var.namespace, "cpu_usage_active", "InstanceId", "${aws:InstanceId}"],
+            [".", "mem_used_percent", ".", "."],
+            [".", "disk_used_percent", ".", "."],
+            [".", "errors_out", ".", "."],
+            [".", "read_bytes", ".", "."],
+            [".", "write_bytes", ".", "."]
+          ],
+          "period"     : 300,
+          "stat"       : "Average",
+          "title"      : "System Metrics",
+          "view"       : "timeSeries",
+          "region"     : "us-west-2"
+        }
+      },
+      {
+        "type"       : "alarm",
+        "x"          : 6,
+        "y"          : 0,
+        "width"      : 6,
+        "height"     : 6,
+        "properties" : {
+          "alarms": [
+            aws_cloudwatch_metric_alarm.metric_alarms["HighCPUUtilization"].alarm_arn,
+            aws_cloudwatch_metric_alarm.metric_alarms["LowMemoryAvailable"].alarm_arn,
+            aws_cloudwatch_metric_alarm.metric_alarms["HighDiskUsage"].alarm_arn,
+            aws_cloudwatch_metric_alarm.metric_alarms["HighNetworkErrorRate"].alarm_arn,
+            aws_cloudwatch_metric_alarm.metric_alarms["HighReadIO"].alarm_arn,
+            aws_cloudwatch_metric_alarm.metric_alarms["HighWriteIO"].alarm_arn
+          ],
+          "title" : "Alarms Overview"
+        }
+      }
+    ]
+  })
+}
